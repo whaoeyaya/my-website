@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class智行小管家 · 精美旗舰版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #f7f8fc, #eef2f7);
+            color: #222;
+            line-height: 1.6;
+        }
+
+        /* 账号登录弹窗样式（增强版） */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-title {
+            font-size: 28px;
+            color: #2d8cf0;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        /* 账号输入框样式 */
+        .account-input {
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border: 1px solid #e4e7ed;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+        }
+        .account-input:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 4px rgba(79,172,254,0.15);
+        }
+        /* 登录按钮组 */
+        .login-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .phone-login-btn {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+        }
+        .wechat-login-btn {
+            background: linear-gradient(90deg, #07c160, #52c41a);
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79,172,254,0.3);
+        }
+        .wechat-login-btn:hover {
+            box-shadow: 0 5px 15px rgba(82,196,26,0.3);
+        }
+        /* 历史账号列表 */
+        .history-accounts {
+            margin: 15px 0;
+            text-align: left;
+        }
+        .history-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .account-item {
+            padding: 10px 15px;
+            background: #f5f8ff;
+            border-radius: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .account-item:hover {
+            background: #e8f4ff;
+        }
+        .account-name {
+            font-size: 15px;
+            color: #2d8cf0;
+            font-weight: 500;
+        }
+        .delete-account {
+            color: #ff6b6b;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .login-tip {
+            color: #666;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        /* 账号信息栏（登录后显示） */
+        .user-bar {
+            background: white;
+            padding: 15px 30px;
+            text-align: right;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 16px;
+        }
+        .user-name {
+            color: #2d8cf0;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .logout-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #ff6b6b;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* 原有样式完全保留 */
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.2);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .header-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #fff;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            padding: 30px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .menu-item {
+            background: white;
+            padding: 26px 20px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+            border-top: 5px solid #4facfe;
+            font-size: 15px;
+            font-weight: 500;
+            width: 210px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(79, 172, 254, 0.25);
+            background: #f0f9ff;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            color: #2d8cf0;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f5ff;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 11px 24px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            color: white;
+            cursor: pointer;
+            margin: 6px 6px;
+            transition: 0.25s;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.35);
+        }
+
+        .btn-red {
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+        }
+
+        .btn-blue {
+            background: linear-gradient(90deg, #3c8dbc, #00c6ff);
+        }
+
+        .btn-orange {
+            background: linear-gradient(90deg, #ff9a9e, #fecfef);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 22px 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table th {
+            background: linear-gradient(90deg, #f0f9ff, #e6f7ff);
+            color: #2d8cf0;
+            padding: 14px;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 13px;
+            text-align: center;
+            border-bottom: 1px solid #f4f7fa;
+        }
+
+        table tr:hover {
+            background: #f7fcff;
+        }
+
+        .random-full {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .random-name {
+            font-size: 100px;
+            color: #fff;
+            font-weight: bold;
+            animation: beat 0.25s infinite alternate;
+            text-shadow: 0 0 30px #4facfe;
+            margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 60px;
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ffd700;
+            margin-bottom: 30px;
+        }
+
+        @keyframes beat {
+            from { transform: scale(1); }
+            to { transform: scale(1.08); }
+        }
+
+        .seat-layout {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .seat {
+            width: 75px; height: 75px;
+            background: linear-gradient(135deg, #d1e7ff, #e6f7ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2d8cf0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .timer-box {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2d8cf0;
+            margin: 25px 0;
+            text-shadow: 0 2px 10px rgba(79,172,254,0.2);
+            text-align: center;
+        }
+        .timer-date {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .group-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin: 25px 0;
+        }
+
+        .group {
+            background: linear-gradient(135deg, #f0f9ff, #e6f7ff);
+            padding: 20px;
+            border-radius: 14px;
+            min-width: 190px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .notice-box {
+            background: linear-gradient(135deg, #fff8e1, #ffefc5);
+            padding: 25px;
+            border-radius: 14px;
+            font-size: 16px;
+            line-height: 1.9;
+            margin: 18px 0;
+            border-left: 6px solid #ffc107;
+        }
+
+        .honor-box {
+            background: linear-gradient(135deg, #ffd700, #ffec48);
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: left;
+            margin: 25px 0;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(255,215,0,0.3);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .honor-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ffc107;
+            display: flex;
+            justify-content: space-between;
+        }
+        .honor-rank {
+            color: #d32f2f;
+            margin-right: 15px;
+        }
+        .honor-name {
+            flex: 1;
+        }
+        .honor-score {
+            color: #1976d2;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            padding: 15px;
+            border: 1px solid #e4e7ed;
+            border-radius: 12px;
+            font-size: 15px;
+            margin: 12px 0;
+            resize: vertical;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 4px rgba(79,172,254,0.15);
+        }
+
+        .record-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d8cf0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 4px rgba(79,172,254,0.15);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* 新增操作日志样式 */
+        .log-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .log-filter select, .log-filter input {
+            padding: 8px 12px;
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .log-table th {
+            font-size: 14px;
+            padding: 12px 8px;
+        }
+        .log-table td {
+            font-size: 13px;
+            padding: 10px 8px;
+            word-break: break-all;
+        }
+        .log-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+        }
+        .log-type-import {
+            background: #4facfe;
+        }
+        .log-type-sign {
+            background: #07c160;
+        }
+        .log-type-score {
+            background: #ff9a9e;
+        }
+        .log-type-record {
+            background: #ff6b6b;
+        }
+        .log-type-notice {
+            background: #ffc107;
+        }
+        .log-type-homework {
+            background: #9c27b0;
+        }
+        .log-type-other {
+            background: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- 账号登录弹窗（默认显示） -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <div class="login-title">🔑 班级管家 - 账号登录</div>
+            <!-- 账号输入框 -->
+            <input type="text" class="account-input" id="accountInput" placeholder="输入手机号/微信昵称/自定义账号名">
+            
+            <!-- 登录按钮组 -->
+            <div class="login-btn-group">
+                <button class="login-btn phone-login-btn" onclick="loginByPhone()">📱 手机号快捷登录</button>
+                <button class="login-btn wechat-login-btn" onclick="loginByWechat()">💚 微信快捷登录</button>
+            </div>
+            
+            <!-- 历史账号列表 -->
+            <div class="history-accounts">
+                <div class="history-title">📜 历史登录账号</div>
+                <div id="historyAccountsList"></div>
+            </div>
+            
+            <div class="login-tip">提示：每个账号数据独立存储，永久保存，安全便捷</div>
+        </div>
+    </div>
+
+    <!-- 账号信息栏（登录后显示） -->
+    <div class="user-bar" id="userBar" style="display: none;">
+        <span class="user-name" id="showUsername"></span>
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+    </div>
+
+    <!-- 原有界面完全保留 -->
+    <div class="header">
+        <img src="https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/f0cdb6626251410fbeace94a34f9c11a.jpg~tplv-a9rns2rl98-24:720:720.jpg?lk3s=8e244e95&rcl=20260321180949FE239C1B851A7D854433&rrcfp=8a172a1a&x-expires=1774692589&x-signature=SFuer0TFSnPEE0VHsMWaL6XTxG8%3D" class="header-logo" alt="Class智行小管家">
+        <h1>Class智行小管家</h1>
+        <p>课堂教学全能工具 · 精美旗舰版</p>
+    </div>
+
+    <div class="menu">
+        <div class="menu-item" onclick="showPage('welcome')">🏠 欢迎页</div>
+        <div class="menu-item" onclick="showPage('sign')">📝 学生签到</div>
+        <div class="menu-item" onclick="showPage('call')">🎤 随机点名</div>
+        <div class="menu-item" onclick="showPage('score')">⭐ 班级积分</div>
+        <div class="menu-item" onclick="showPage('group')">👥 随机分组</div>
+        <div class="menu-item" onclick="showPage('timer')">⏱️ 课堂计时</div>
+        <div class="menu-item" onclick="showPage('record')">📋 行为记录</div>
+        <div class="menu-item" onclick="showPage('check')">📊 考勤统计</div>
+        <div class="menu-item" onclick="showPage('game')">🎮 课堂小游戏</div>
+        <div class="menu-item" onclick="showPage('seat')">🪑 座位图</div>
+        <div class="menu-item" onclick="showPage('lottery')">🎁 随机抽奖</div>
+        <div class="menu-item" onclick="showPage('notice')">📢 班级公告</div>
+        <div class="menu-item" onclick="showPage('homework')">📚 作业布置</div>
+        <div class="menu-item" onclick="showPage('honor')">🏅 荣誉墙</div>
+        <div class="menu-item" onclick="showPage('exportAll')">📤 数据导出</div>
+        <div class="menu-item" onclick="showPage('operationLog')">📜 操作日志</div> <!-- 新增日志菜单 -->
+    </div>
+
+    <div class="page active" id="welcome">
+        <h2 class="page-title">🏠 欢迎使用Class智行小管家</h2>
+        <div style="font-size:17px; line-height:2.2;">
+            <p>✅ 精美UI界面 · 课堂投影超好看</p>
+            <p>✅ 导入一次名单（支持学号+姓名）· 全功能自动共用</p>
+            <p>✅ 积分一键加减 · 自动排名</p>
+            <p>✅ 点名/分组/计时/游戏一应俱全</p>
+            <p>✅ 数据永久保存 · 一键导出</p>
+            <p>✅ 操作日志记录 · 数据变更可追溯</p> <!-- 新增说明 -->
+        </div>
+    </div>
+
+    <div class="page" id="sign">
+        <h2 class="page-title">📝 学生签到</h2>
+        <div style="margin-bottom:10px; color:#666; font-size:14px;">
+            格式说明：每行输入【学号 姓名】（空格分隔）
+        </div>
+        <textarea id="studentList" placeholder="每行输入一个学生信息，例如：001 张三"></textarea>
+        <button class="btn" onclick="generateSignTable()">生成表格</button>
+        <button class="btn" onclick="oneKeySign()">一键全班签到</button>
+        <table>
+            <tr><th>序号</th><th>学号</th><th>姓名</th><th>签到状态</th><th>操作</th></tr>
+            <tbody id="signBody"></tbody>
+        </table>
+    </div>
+
+    <div class="page" id="call">
+        <h2 class="page-title">🎤 全屏随机点名</h2>
+        <button class="btn btn-blue" onclick="startRoll()">开始全屏点名</button>
+    </div>
+
+    <div class="page" id="score">
+        <h2 class="page-title">⭐ 班级积分（一键加减 + 自动排名）</h2>
+        <button class="btn" onclick="renderScoreTable()">刷新学生列表</button>
+        <table>
+            <tr><th>排名</th><th>学号</th><th>姓名</th><th>当前积分</th><th>操作</th></tr>
+            <tbody id="scoreBody"></tbody>
+        </table>
+    </div>
+
+    <div class="page" id="group">
+        <h2 class="page-title">👥 一键随机分组</h2>
+        <input type="number" id="groupCount" value="4" style="padding:10px; width:90px; border-radius:8px; border:1px solid #ddd;"> 组
+        <button class="btn" onclick="randomGroup()">开始分组</button>
+        <div class="group-box" id="groupBox"></div>
+    </div>
+
+    <div class="page" id="timer">
+        <h2 class="page-title">⏱️ 课堂计时器</h2>
+        <button class="btn" onclick="startTimer()">正计时</button>
+        <button class="btn btn-blue" onclick="startCountDown()">倒计时</button>
+        <button class="btn btn-red" onclick="stopTimer()">停止计时</button>
+        <div class="timer-box" id="timerShow">
+            <div class="timer-date" id="timerDate">2026年03月21日</div>
+            <div id="timerTime">00:00:00</div>
+        </div>
+        <input type="number" id="minute" value="10" style="padding:10px; width:90px; border-radius:8px; border:1px solid #ddd;"> 分钟
+    </div>
+
+    <div class="page" id="record">
+        <h2 class="page-title">📋 学生行为记录</h2>
+        <button class="btn" onclick="openGoodModal()">👍 表扬学生</button>
+        <button class="btn btn-red" onclick="openBadModal()">⚠️ 违纪记录</button>
+        <table>
+            <tr><th>时间</th><th>学号</th><th>姓名</th><th>类型</th><th>内容</th></tr>
+            <tbody id="recordBody"></tbody>
+        </table>
+    </div>
+
+    <div class="page" id="check">
+        <h2 class="page-title">📊 考勤统计</h2>
+        <button class="btn" onclick="calcCheck()">立即统计</button>
+        <div style="font-size:19px; line-height:2.2; margin:20px 0;" id="checkInfo"></div>
+    </div>
+
+    <div class="page" id="game">
+        <h2 class="page-title">🎮 课堂互动小游戏</h2>
+        <button class="btn" onclick="quickPick()">🎯 快速选人</button>
+        <button class="btn btn-orange" onclick="raiseHand()">🙋‍♂️ 举手抢答</button>
+        <div id="gameResult" style="font-size:28px; color:#ff6b6b; margin:25px 0; font-weight:bold;"></div>
+    </div>
+
+    <div class="page" id="seat">
+        <h2 class="page-title">🪑 班级座位图</h2>
+        <button class="btn" onclick="generateSeat()">生成座位</button>
+        <div class="seat-layout" id="seatBox"></div>
+    </div>
+
+    <div class="page" id="lottery">
+        <h2 class="page-title">🎁 随机抽奖</h2>
+        <button class="btn" onclick="startLottery()">开始抽奖</button>
+    </div>
+
+    <div class="page" id="notice">
+        <h2 class="page-title">📢 班级公告板</h2>
+        <textarea id="noticeText" placeholder="输入班级公告内容…"></textarea>
+        <button class="btn" onclick="saveNotice()">保存公告</button>
+        <div class="notice-box" id="noticeShow"></div>
+    </div>
+
+    <div class="page" id="homework">
+        <h2 class="page-title">📚 作业布置</h2>
+        <textarea id="homeworkText" placeholder="输入今日作业内容…"></textarea>
+        <button class="btn" onclick="saveHomework()">发布作业</button>
+        <div class="notice-box" id="homeworkShow"></div>
+    </div>
+
+    <div class="page" id="honor">
+        <h2 class="page-title">🏅 班级荣誉墙（前20名）</h2>
+        <button class="btn" onclick="showHonor()">刷新榜单</button>
+        <div class="honor-box" id="honorShow"></div>
+    </div>
+
+    <div class="page" id="exportAll">
+        <h2 class="page-title">📤 数据导出中心</h2>
+        <button class="btn" onclick="exportSign()">导出签到表</button>
+        <button class="btn" onclick="exportScore()">导出积分表</button>
+        <button class="btn" onclick="exportRecord()">导出行为记录</button>
+        <button class="btn" onclick="exportLog()">导出操作日志</button> <!-- 新增导出日志按钮 -->
+    </div>
+
+    <!-- 新增操作日志页面 -->
+    <div class="page" id="operationLog">
+        <h2 class="page-title">📜 操作日志（数据变更可追溯）</h2>
+        <div class="log-filter">
+            <select id="logTypeFilter" class="form-control" onchange="filterLogs()">
+                <option value="">所有操作类型</option>
+                <option value="导入名单">导入名单</option>
+                <option value="签到变更">签到变更</option>
+                <option value="积分变更">积分变更</option>
+                <option value="行为记录">行为记录</option>
+                <option value="公告修改">公告修改</option>
+                <option value="作业修改">作业修改</option>
+                <option value="其他操作">其他操作</option>
+            </select>
+            <input type="date" id="logDateFilter" class="form-control" onchange="filterLogs()" placeholder="按日期筛选">
+            <button class="btn" onclick="refreshLogs()">刷新日志</button>
+            <button class="btn btn-blue" onclick="clearLogFilter()">清空筛选</button>
+        </div>
+        <table class="log-table">
+            <tr>
+                <th>序号</th>
+                <th>操作时间</th>
+                <th>操作类型</th>
+                <th>操作内容</th>
+                <th>数据变更</th>
+            </tr>
+            <tbody id="logBody"></tbody>
+        </table>
+    </div>
+
+    <div class="random-full" id="rollBox">
+        <div class="random-name" id="rollName">开始</div>
+        <div class="countdown" id="rollCountdown">5</div>
+        <button class="btn" onclick="closeRoll()" style="margin-top:30px;">关闭</button>
+    </div>
+    <div class="random-full" id="lotteryBox">
+        <div class="random-name" id="lotteryName">抽奖中</div>
+        <div class="countdown" id="lotteryCountdown">5</div>
+        <button class="btn" onclick="closeLottery()" style="margin-top:30px;">关闭</button>
+    </div>
+
+    <div class="record-modal" id="goodModal">
+        <div class="modal-content">
+            <div class="modal-title">👍 表扬学生</div>
+            <div class="form-group">
+                <label for="goodStudent">选择学生（学号-姓名）</label>
+                <select id="goodStudent" class="form-control">
+                    <option value="">-- 请选择学生 --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="goodType">表扬类型</label>
+                <select id="goodType" class="form-control">
+                    <option value="">-- 请选择表扬类型 --</option>
+                    <option value="按时守纪">1. 按时守纪</option>
+                    <option value="课堂表现">2. 课堂表现</option>
+                    <option value="作业完成">3. 作业完成</option>
+                    <option value="卫生整洁">4. 卫生整洁</option>
+                    <option value="文明礼仪">5. 文明礼仪</option>
+                    <option value="好人好事">6. 好人好事</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="goodRemark">备注（可选）</label>
+                <input type="text" id="goodRemark" class="form-control" placeholder="输入额外备注信息...">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="saveGoodRecord()">确认保存</button>
+                <button class="btn btn-red" onclick="closeGoodModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="record-modal" id="badModal">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ 违纪记录</div>
+            <div class="form-group">
+                <label for="badStudent">选择学生（学号-姓名）</label>
+                <select id="badStudent" class="form-control">
+                    <option value="">-- 请选择学生 --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="badType">违纪类型</label>
+                <select id="badType" class="form-control">
+                    <option value="">-- 请选择违纪类型 --</option>
+                    <option value="课堂讲话">1. 课堂讲话</option>
+                    <option value="追逐打闹">2. 追逐打闹</option>
+                    <option value="乱扔垃圾">3. 乱扔垃圾</option>
+                    <option value="损坏公物">4. 损坏公物</option>
+                    <option value="顶撞师长">5. 顶撞师长</option>
+                    <option value="不佩戴红领巾">6. 不佩戴红领巾</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="badRemark">备注（可选）</label>
+                <input type="text" id="badRemark" class="form-control" placeholder="输入额外备注信息...">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="saveBadRecord()">确认保存</button>
+                <button class="btn btn-red" onclick="closeBadModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 多账号独立存储核心逻辑（新增操作日志） ==========
+        let currentUser = null; // 当前登录用户
+        let userList = JSON.parse(localStorage.getItem('classManagerUsers')) || {}; // 所有用户数据
+        let historyAccounts = JSON.parse(localStorage.getItem('classManagerHistoryAccounts')) || []; // 历史登录账号
+
+        // 初始化历史账号列表
+        function initHistoryAccounts() {
+            const listEl = document.getElementById('historyAccountsList');
+            if (historyAccounts.length === 0) {
+                listEl.innerHTML = '<div style="text-align:center; color:#999; font-size:14px;">暂无历史登录账号</div>';
+                return;
+            }
+            
+            let html = '';
+            historyAccounts.forEach(account => {
+                html += `
+                <div class="account-item">
+                    <span class="account-name">${account}</span>
+                    <span class="delete-account" onclick="deleteAccount('${account}')">删除</span>
+                </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        // 手机号快捷登录
+        function loginByPhone() {
+            let account = document.getElementById('accountInput').value.trim();
+            if (!account) {
+                alert('请输入手机号或自定义账号名！');
+                return;
+            }
+            
+            // 标准化手机号格式（可选）
+            if (/^\d{11}$/.test(account)) {
+                account = `手机号-${account}`;
+            }
+            
+            doLogin(account);
+        }
+
+        // 微信快捷登录
+        function loginByWechat() {
+            let account = document.getElementById('accountInput').value.trim();
+            if (!account) {
+                alert('请输入微信昵称或自定义账号名！');
+                return;
+            }
+            
+            // 标准化微信账号格式（可选）
+            account = `微信-${account}`;
+            
+            doLogin(account);
+        }
+
+        // 通用登录处理
+        function doLogin(account) {
+            // 如果账号不存在，自动创建并初始化数据（新增operationLogs字段）
+            if (!userList[account]) {
+                userList[account] = {
+                    studentData: [],
+                    scoreData: {},
+                    records: [],
+                    notice: '',
+                    homework: '',
+                    signStatus: [],
+                    operationLogs: [] // 新增：操作日志数组
+                };
+                // 保存新账号到本地
+                localStorage.setItem('classManagerUsers', JSON.stringify(userList));
+            }
+            
+            // 记录登录操作日志
+            addOperationLog('其他操作', '账号登录', `登录账号：${account}`);
+            
+            // 更新历史账号（去重）
+            if (!historyAccounts.includes(account)) {
+                historyAccounts.unshift(account);
+                // 最多保留10个历史账号
+                if (historyAccounts.length > 10) {
+                    historyAccounts = historyAccounts.slice(0, 10);
+                }
+                localStorage.setItem('classManagerHistoryAccounts', JSON.stringify(historyAccounts));
+                initHistoryAccounts();
+            }
+            
+            // 登录成功，加载数据
+            currentUser = account;
+            loadUserData();
+            
+            // 隐藏登录弹窗，显示用户栏
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('userBar').style.display = 'block';
+            document.getElementById('showUsername').innerText = `当前账号：${account}`;
+            
+            alert(`✅ 登录成功！当前账号：${account}`);
+        }
+
+        // 从历史账号登录
+        function loginFromHistory(account) {
+            document.getElementById('accountInput').value = account.replace(/^手机号-|^微信-/, '');
+            doLogin(account);
+        }
+
+        // 删除账号（谨慎操作）
+        function deleteAccount(account) {
+            if (confirm(`⚠️ 确定删除账号【${account}】吗？该操作会删除此账号的所有数据！`)) {
+                // 记录删除账号日志
+                addOperationLog('其他操作', '账号删除', `删除账号：${account}`);
+                
+                // 删除账号数据
+                delete userList[account];
+                localStorage.setItem('classManagerUsers', JSON.stringify(userList));
+                
+                // 从历史列表移除
+                historyAccounts = historyAccounts.filter(item => item !== account);
+                localStorage.setItem('classManagerHistoryAccounts', JSON.stringify(historyAccounts));
+                
+                // 重新初始化列表
+                initHistoryAccounts();
+                
+                // 如果删除的是当前登录账号，退出登录
+                if (currentUser === account) {
+                    logout();
+                }
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('⚠️ 确定退出当前账号吗？')) {
+                // 记录退出登录日志
+                addOperationLog('其他操作', '账号退出', `退出账号：${currentUser}`);
+                
+                currentUser = null;
+                document.getElementById('loginModal').style.display = 'flex';
+                document.getElementById('userBar').style.display = 'none';
+                document.getElementById('accountInput').value = ''; // 清空账号输入框
+                initHistoryAccounts(); // 刷新历史账号列表
+            }
+        }
+
+        // 加载当前用户数据（新增加载操作日志）
+        function loadUserData() {
+            const userData = userList[currentUser];
+            studentData = userData.studentData || [];
+            scoreData = userData.scoreData || {};
+            records = userData.records || [];
+            
+            // 加载公告和作业
+            document.getElementById('noticeShow').innerText = userData.notice || '暂无公告';
+            document.getElementById('noticeText').value = userData.notice || '';
+            document.getElementById('homeworkShow').innerText = userData.homework || '暂无作业';
+            document.getElementById('homeworkText').value = userData.homework || '';
+            
+            // 刷新各模块显示
+            renderScoreTable();
+            showRecord();
+            updateStudentSelects();
+            updateTimerDate();
+            refreshLogs(); // 加载操作日志
+            
+            // 恢复签到表
+            if (userData.signStatus.length > 0) {
+                let html = '';
+                studentData.forEach((student, i) => {
+                    html += `<tr><td>${i+1}</td><td>${student.id || '-'}</td><td>${student.name}</td><td class="s">${userData.signStatus[i] || '未签到'}</td><td><button class="btn" onclick="toggle(this)">切换</button></td></tr>`;
+                });
+                document.getElementById('signBody').innerHTML = html;
+            }
+        }
+
+        // 保存当前用户数据（新增保存操作日志）
+        function save() {
+            if (!currentUser) return; // 未登录不保存
+            
+            // 保存核心数据
+            userList[currentUser].studentData = studentData;
+            userList[currentUser].scoreData = scoreData;
+            userList[currentUser].records = records;
+            
+            // 保存签到状态
+            const signStatus = [];
+            document.querySelectorAll('#signBody .s').forEach(td => {
+                signStatus.push(td.innerText);
+            });
+            userList[currentUser].signStatus = signStatus;
+            
+            // 保存到本地存储
+            localStorage.setItem('classManagerUsers', JSON.stringify(userList));
+        }
+
+        // ========== 新增操作日志核心功能 ==========
+        // 添加操作日志
+        function addOperationLog(type, content, changeDetail = '') {
+            if (!currentUser) return;
+            
+            const log = {
+                id: Date.now(), // 唯一标识
+                time: new Date().toLocaleString(), // 操作时间（含秒）
+                date: new Date().toISOString().split('T')[0], // 操作日期（用于筛选）
+                type: type, // 操作类型
+                content: content, // 操作内容
+                changeDetail: changeDetail // 数据变更详情
+            };
+            
+            // 添加到当前用户的日志列表（最多保留1000条）
+            userList[currentUser].operationLogs = userList[currentUser].operationLogs || [];
+            userList[currentUser].operationLogs.unshift(log); // 最新的日志在前面
+            if (userList[currentUser].operationLogs.length > 1000) {
+                userList[currentUser].operationLogs = userList[currentUser].operationLogs.slice(0, 1000);
+            }
+            
+            // 保存日志到本地存储
+            localStorage.setItem('classManagerUsers', JSON.stringify(userList));
+        }
+
+        // 刷新操作日志列表
+        function refreshLogs() {
+            if (!currentUser) {
+                document.getElementById('logBody').innerHTML = '<tr><td colspan=5>请先登录账号</td></tr>';
+                return;
+            }
+            
+            const logs = userList[currentUser].operationLogs || [];
+            if (logs.length === 0) {
+                document.getElementById('logBody').innerHTML = '<tr><td colspan=5>暂无操作日志</td></tr>';
+                return;
+            }
+            
+            // 应用筛选条件
+            const typeFilter = document.getElementById('logTypeFilter').value;
+            const dateFilter = document.getElementById('logDateFilter').value;
+            
+            let filteredLogs = logs;
+            if (typeFilter) {
+                filteredLogs = filteredLogs.filter(log => log.type === typeFilter);
+            }
+            if (dateFilter) {
+                filteredLogs = filteredLogs.filter(log => log.date === dateFilter);
+            }
+            
+            // 渲染日志表格
+            let html = '';
+            filteredLogs.forEach((log, index) => {
+                // 根据操作类型设置样式类
+                let typeClass = '';
+                switch(log.type) {
+                    case '导入名单': typeClass = 'log-type-import'; break;
+                    case '签到变更': typeClass = 'log-type-sign'; break;
+                    case '积分变更': typeClass = 'log-type-score'; break;
+                    case '行为记录': typeClass = 'log-type-record'; break;
+                    case '公告修改': typeClass = 'log-type-notice'; break;
+                    case '作业修改': typeClass = 'log-type-homework'; break;
+                    default: typeClass = 'log-type-other';
+                }
+                
+                html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${log.time}</td>
+                    <td><span class="log-type ${typeClass}">${log.type}</span></td>
+                    <td>${log.content}</td>
+                    <td>${log.changeDetail || '无'}</td>
+                </tr>
+                `;
+            });
+            
+            document.getElementById('logBody').innerHTML = html;
+        }
+
+        // 筛选日志
+        function filterLogs() {
+            refreshLogs();
+        }
+
+        // 清空筛选条件
+        function clearLogFilter() {
+            document.getElementById('logTypeFilter').value = '';
+            document.getElementById('logDateFilter').value = '';
+            refreshLogs();
+        }
+
+        // 导出操作日志
+        function exportLog() {
+            if (!currentUser) {
+                alert('请先登录账号！');
+                return;
+            }
+            
+            const logs = userList[currentUser].operationLogs || [];
+            if (logs.length === 0) {
+                alert('暂无操作日志可导出！');
+                return;
+            }
+            
+            let csv = '序号,操作时间,操作类型,操作内容,数据变更\n';
+            logs.forEach((log, index) => {
+                csv += `${index + 1},"${log.time}","${log.type}","${log.content}","${log.changeDetail || '无'}"\n`;
+            });
+            
+            // 下载CSV文件
+            const blob = new Blob([new Uint8Array([0xEF,0xBB,0xBF]), csv], {type: 'text/csv'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `操作日志_${currentUser}_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`;
+            a.click();
+        }
+
+        // ========== 原有变量和函数（新增日志记录） ==========
+        let studentData = [];
+        let scoreData = {};
+        let records = [];
+        let timer = null;
+        let rollCountdownTimer = null;
+        let lotteryCountdownTimer = null;
+        let lotteryNameTimer = null;
+        let isCountdownMode = false;
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 'record') {
+                updateStudentSelects();
+                showRecord();
+            }
+            if (id === 'timer') {
+                updateTimerDate();
+            }
+            if (id === 'operationLog') { // 切换到日志页面时刷新
+                refreshLogs();
+            }
+        }
+
+        function updateTimerDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('timerDate').innerText = `${year}年${month}月${day}日`;
+        }
+
+        function generateSignTable(){
+            let t = document.getElementById('studentList').value.trim();
+            if(!t){alert('请先导入学生名单！');return;}
+            
+            // 记录导入前的名单（用于日志）
+            const oldList = JSON.stringify(studentData);
+            
+            studentData = [];
+            const lines = t.split('\n').map(line => line.trim()).filter(Boolean);
+            lines.forEach(line => {
+                const parts = line.split(' ');
+                let studentId = '';
+                let studentName = '';
+                if (parts.length >= 2) {
+                    studentId = parts[0];
+                    studentName = parts.slice(1).join(' ');
+                } else {
+                    studentId = '';
+                    studentName = parts[0];
+                }
+                studentData.push({id: studentId,name: studentName});
+            });
+            
+            // 记录导入后的名单（用于日志）
+            const newList = JSON.stringify(studentData);
+            
+            // 保存签到数据
+            let html='';
+            const signStatus = [];
+            studentData.forEach((student, i)=>{
+                signStatus.push('未签到');
+                html+=`<tr><td>${i+1}</td><td>${student.id || '-'}</td><td>${student.name}</td><td class="s">未签到</td><td><button class="btn" onclick="toggle(this)">切换</button></td></tr>`;
+            });
+            document.getElementById('signBody').innerHTML=html;
+            
+            // 更新用户数据
+            if (currentUser) {
+                userList[currentUser].studentData = studentData;
+                userList[currentUser].signStatus = signStatus;
+                save();
+                
+                // 记录导入名单日志
+                addOperationLog(
+                    '导入名单', 
+                    `导入${studentData.length}名学生名单`, 
+                    `旧名单：${oldList} | 新名单：${newList}`
+                );
+            }
+            
+            updateStudentSelects();
+        }
+
+        function toggle(b){
+            let c = b.parentElement.parentElement.cells[3];
+            const oldStatus = c.innerText;
+            const newStatus = oldStatus=='未签到' ? '已签到' : '未签到';
+            c.innerText = newStatus;
+            
+            // 获取学生信息
+            const studentName = b.parentElement.parentElement.cells[2].innerText;
+            const studentId = b.parentElement.parentElement.cells[1].innerText;
+            
+            // 实时保存签到状态
+            if (currentUser) {
+                const signStatus = [];
+                document.querySelectorAll('#signBody .s').forEach(td => {
+                    signStatus.push(td.innerText);
+                });
+                userList[currentUser].signStatus = signStatus;
+                save();
+                
+                // 记录签到变更日志
+                addOperationLog(
+                    '签到变更', 
+                    `${studentId ? studentId + '-' : ''}${studentName} 签到状态变更`, 
+                    `旧状态：${oldStatus} | 新状态：${newStatus}`
+                );
+            }
+        }
+
+        function oneKeySign(){
+            // 记录一键签到前的状态
+            const oldStatusList = [];
+            document.querySelectorAll('#signBody .s').forEach(c => {
+                oldStatusList.push(c.innerText);
+            });
+            
+            document.querySelectorAll('#signBody .s').forEach(c=>c.innerText='已签到');
+            
+            // 保存一键签到状态
+            if (currentUser) {
+                const signStatus = [];
+                document.querySelectorAll('#signBody .s').forEach(td => {
+                    signStatus.push(td.innerText);
+                });
+                userList[currentUser].signStatus = signStatus;
+                save();
+                
+                // 记录一键签到日志
+                addOperationLog(
+                    '签到变更', 
+                    '一键全班签到', 
+                    `旧状态：${JSON.stringify(oldStatusList)} | 新状态：全部已签到`
+                );
+            }
+        }
+
+        function renderScoreTable(){
+            if(studentData.length==0){
+                document.getElementById('scoreBody').innerHTML='<tr><td colspan=5>请先导入学生名单</td></tr>';
+                return;
+            }
+            studentData.forEach(student => {
+                const key = getStudentKey(student);
+                scoreData[key] = scoreData[key] || 0;
+            });
+            let sorted = [...studentData].sort((a,b)=>{
+                const keyA = getStudentKey(a);
+                const keyB = getStudentKey(b);
+                return scoreData[keyB] - scoreData[keyA];
+            });
+            let html='';
+            sorted.forEach((student, i)=>{
+                const key = getStudentKey(student);
+                html+=`<tr><td>${i+1}</td><td>${student.id || '-'}</td><td>${student.name}</td><td style="font-weight:bold;font-size:16px;">${scoreData[key]}</td><td><button class="btn" onclick="addScore('${key}')">+1 加分</button><button class="btn btn-red" onclick="subScore('${key}')">-1 减分</button></td></tr>`;
+            });
+            document.getElementById('scoreBody').innerHTML=html;
+        }
+
+        function addScore(key){
+            const oldScore = scoreData[key] || 0;
+            scoreData[key] = oldScore + 1;
+            const newScore = scoreData[key];
+            
+            // 获取学生信息
+            const student = getStudentByKey(key);
+            
+            save();
+            renderScoreTable();
+            
+            // 记录积分变更日志
+            addOperationLog(
+                '积分变更', 
+                `${student.id ? student.id + '-' : ''}${student.name} 积分增加`, 
+                `旧积分：${oldScore} | 新积分：${newScore}`
+            );
+        }
+        
+        function subScore(key){
+            const oldScore = scoreData[key] || 0;
+            scoreData[key] = oldScore - 1;
+            const newScore = scoreData[key];
+            
+            // 获取学生信息
+            const student = getStudentByKey(key);
+            
+            save();
+            renderScoreTable();
+            
+            // 记录积分变更日志
+            addOperationLog(
+                '积分变更', 
+                `${student.id ? student.id + '-' : ''}${student.name} 积分减少`, 
+                `旧积分：${oldScore} | 新积分：${newScore}`
+            );
+        }
+
+        function getStudentKey(student) {
+            return student.id ? `${student.id}-${student.name}` : student.name;
+        }
+        
+        function getStudentByKey(key) {
+            if (key.includes('-')) {
+                const [id, name] = key.split('-');
+                return studentData.find(s => s.id === id && s.name === name);
+            } else {
+                return studentData.find(s => s.name === key);
+            }
+        }
+
+        function startRoll(){
+            if(studentData.length === 0){alert('请先导入学生名单！');return;}
+            
+            // 记录随机点名操作
+            addOperationLog('其他操作', '开始全屏随机点名', '无');
+            
+            let box = document.getElementById('rollBox');
+            let name = document.getElementById('rollName');
+            let countdownEl = document.getElementById('rollCountdown');
+            box.style.display = 'flex';
+            let countdown = 5;
+            countdownEl.innerText = countdown;
+            if(rollCountdownTimer) clearInterval(rollCountdownTimer);
+            let nameTimer = setInterval(()=>{
+                const randomStudent = studentData[Math.floor(Math.random()*studentData.length)];
+                name.innerText = randomStudent.id ? `${randomStudent.id}-${randomStudent.name}` : randomStudent.name;
+            },100);
+            rollCountdownTimer = setInterval(()=>{
+                countdown--;countdownEl.innerText = countdown;
+                if(countdown <= 0){
+                    clearInterval(nameTimer);
+                    clearInterval(rollCountdownTimer);
+                    countdownEl.innerText = "选中！";
+                    
+                    // 记录点名结果
+                    const selectedStudent = name.innerText;
+                    addOperationLog('其他操作', '随机点名完成', `选中学生：${selectedStudent}`);
+                }
+            }, 1000);
+        }
+        
+        function closeRoll(){
+            if(rollCountdownTimer) clearInterval(rollCountdownTimer);
+            document.getElementById('rollBox').style.display='none';
+            
+            // 记录关闭点名操作
+            addOperationLog('其他操作', '关闭全屏随机点名', '无');
+        }
+
+        function randomGroup(){
+            if(studentData.length === 0){alert('请先导入学生名单！');return;}
+            
+            let cnt=document.getElementById('groupCount').value;
+            let arr=[...studentData];
+            for(let i=arr.length-1;i>0;i--){
+                let j=Math.floor(Math.random()*(i+1));
+                [arr[i],arr[j]]=[arr[j],arr[i]];
+            }
+            let g=Array.from({length:cnt},()=>[]);
+            arr.forEach((student,i)=>g[i%cnt].push(student));
+            let html='';
+            let groupDetail = ''; // 分组详情（用于日志）
+            g.forEach((group, i)=>{
+                const groupStudents = group.map(s => s.id ? `${s.id}-${s.name}` : s.name).join(',');
+                groupDetail += `第${i+1}组：${groupStudents} | `;
+                html+=`<div class="group"><h3>第${i+1}组</h3><p>${groupStudents.replace(/,/g, '<br>')}</p></div>`;
+            });
+            document.getElementById('groupBox').innerHTML=html;
+            
+            // 记录随机分组日志
+            addOperationLog(
+                '其他操作', 
+                `随机分成${cnt}组`, 
+                groupDetail.slice(0, -3) // 去掉最后一个 |
+            );
+        }
+
+        function startTimer(){
+            clearInterval(timer);isCountdownMode = false;
+            
+            // 记录开始正计时日志
+            addOperationLog('其他操作', '开始课堂正计时', '无');
+            
+            let s=0;
+            timer=setInterval(()=>{
+                s++;updateTimerDate();
+                let h=String(Math.floor(s/3600)).padStart(2,'0');
+                let m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+                let ss=String(s%60).padStart(2,'0');
+                document.getElementById('timerTime').innerText=`${h}:${m}:${ss}`;
+            },1000);
+        }
+        
+        function startCountDown(){
+            clearInterval(timer);isCountdownMode = true;
+            let m=document.getElementById('minute').value*60;
+            
+            // 记录开始倒计时日志
+            addOperationLog(
+                '其他操作', 
+                '开始课堂倒计时', 
+                `倒计时时长：${document.getElementById('minute').value}分钟`
+            );
+            
+            timer=setInterval(()=>{
+                updateTimerDate();m--;
+                if(m<=0){
+                    clearInterval(timer);
+                    document.getElementById('timerTime').innerText='时间到';
+                    
+                    // 记录倒计时结束日志
+                    addOperationLog('其他操作', '倒计时结束', '无');
+                    
+                    return;
+                }
+                let h=String(Math.floor(m/3600)).padStart(2,'0');
+                let mm=String(Math.floor((m%3600)/60)).padStart(2,'0');
+                let ss=String(m%60).padStart(2,'0');
+                document.getElementById('timerTime').innerText=`${h}:${mm}:${ss}`;
+            },1000);
+        }
+        
+        function stopTimer(){
+            clearInterval(timer);
+            updateTimerDate();
+            
+            // 记录停止计时日志
+            addOperationLog('其他操作', '停止课堂计时', `当前计时：${document.getElementById('timerTime').innerText}`);
+        }
+
+        function updateStudentSelects() {
+            const goodStudentSelect = document.getElementById('goodStudent');
+            const badStudentSelect = document.getElementById('badStudent');
+            goodStudentSelect.innerHTML = '<option value="">-- 请选择学生 --</option>';
+            badStudentSelect.innerHTML = '<option value="">-- 请选择学生 --</option>';
+            if (studentData.length > 0) {
+                studentData.forEach(student => {
+                    const key = getStudentKey(student);
+                    const displayText = student.id ? `${student.id}-${student.name}` : student.name;
+                    const o1 = document.createElement('option');o1.value=key;o1.textContent=displayText;goodStudentSelect.appendChild(o1);
+                    const o2 = document.createElement('option');o2.value=key;o2.textContent=displayText;badStudentSelect.appendChild(o2);
+                });
+            }
+        }
+
+        function openGoodModal(){
+            if(studentData.length==0){alert('先导入名单');return;}
+            document.getElementById('goodModal').style.display='flex';
+            
+            // 记录打开表扬弹窗日志
+            addOperationLog('其他操作', '打开表扬学生弹窗', '无');
+        }
+        
+        function closeGoodModal(){
+            document.getElementById('goodModal').style.display='none';
+            
+            // 记录关闭表扬弹窗日志
+            addOperationLog('其他操作', '关闭表扬学生弹窗', '无');
+        }
+        
+        function saveGoodRecord(){
+            let key=document.getElementById('goodStudent').value;
+            let type=document.getElementById('goodType').value;
+            let r=document.getElementById('goodRemark').value;
+            if(!key||!type){alert('完善信息');return;}
+            
+            let s=getStudentByKey(key);
+            const recordContent = `${type}${r?'('+r+')':''}`;
+            
+            records.unshift({
+                time:new Date().toLocaleString(),
+                id:s.id,
+                name:s.name,
+                type:'表扬',
+                text: recordContent
+            });
+            
+            save();
+            showRecord();
+            closeGoodModal();
+            
+            // 记录表扬学生日志
+            addOperationLog(
+                '行为记录', 
+                `${s.id ? s.id + '-' : ''}${s.name} 表扬记录`, 
+                `表扬类型：${type} | 备注：${r || '无'}`
+            );
+            
+            alert('保存成功');
+        }
+        
+        function openBadModal(){
+            if(studentData.length==0){alert('先导入名单');return;}
+            document.getElementById('badModal').style.display='flex';
+            
+            // 记录打开违纪弹窗日志
+            addOperationLog('其他操作', '打开违纪记录弹窗', '无');
+        }
+        
+        function closeBadModal(){
+            document.getElementById('badModal').style.display='none';
+            
+            // 记录关闭违纪弹窗日志
+            addOperationLog('其他操作', '关闭违纪记录弹窗', '无');
+        }
+        
+        function saveBadRecord(){
+            let key=document.getElementById('badStudent').value;
+            let type=document.getElementById('badType').value;
+            let r=document.getElementById('badRemark').value;
+            if(!key||!type){alert('完善信息');return;}
+            
+            let s=getStudentByKey(key);
+            const recordContent = `${type}${r?'('+r+')':''}`;
+            
+            records.unshift({
+                time:new Date().toLocaleString(),
+                id:s.id,
+                name:s.name,
+                type:'违纪',
+                text: recordContent
+            });
+            
+            save();
+            showRecord();
+            closeBadModal();
+            
+            // 记录违纪学生日志
+            addOperationLog(
+                '行为记录', 
+                `${s.id ? s.id + '-' : ''}${s.name} 违纪记录`, 
+                `违纪类型：${type} | 备注：${r || '无'}`
+            );
+            
+            alert('保存成功');
+        }
+        
+        function showRecord(){
+            let html='';
+            if(records.length==0)html='<tr><td colspan=5>暂无行为记录</td></tr>';
+            else records.forEach(r=>html+=`<tr><td>${r.time}</td><td>${r.id||'-'}</td><td>${r.name}</td><td>${r.type}</td><td>${r.text}</td></tr>`);
+            document.getElementById('recordBody').innerHTML=html;
+        }
+
+        function calcCheck(){
+            let all=studentData.length;
+            let ok=[...document.querySelectorAll('#signBody .s')].filter(x=>x.innerText=='已签到').length;
+            document.getElementById('checkInfo').innerHTML=`总人数：${all}<br>已签到：${ok}<br>未签到：${all-ok}`;
+            
+            // 记录考勤统计日志
+            addOperationLog(
+                '其他操作', 
+                '考勤统计', 
+                `总人数：${all} | 已签到：${ok} | 未签到：${all-ok}`
+            );
+        }
+        
+        function quickPick(){
+            let r=studentData[Math.floor(Math.random()*studentData.length)];
+            let d=r.id?r.id+'-'+r.name:r.name;
+            document.getElementById('gameResult').innerText='🎯 选中：'+d;
+            
+            // 记录快速选人日志
+            addOperationLog('其他操作', '课堂小游戏-快速选人', `选中：${d}`);
+        }
+        
+        function raiseHand(){
+            let r=studentData[Math.floor(Math.random()*studentData.length)];
+            let d=r.id?r.id+'-'+r.name:r.name;
+            document.getElementById('gameResult').innerText='🙋‍♂️ 抢答成功：'+d;
+            
+            // 记录举手抢答日志
+            addOperationLog('其他操作', '课堂小游戏-举手抢答', `抢答成功：${d}`);
+        }
+        
+        function generateSeat(){
+            let html='';
+            studentData.forEach(s=>{
+                let d=s.id?s.id+'-'+s.name:s.name;
+                html+=`<div class="seat">${d}</div>`;
+            });
+            document.getElementById('seatBox').innerHTML=html;
+            
+            // 记录生成座位图日志
+            addOperationLog('其他操作', '生成班级座位图', `共生成${studentData.length}个座位`);
+        }
+
+        function startLottery(){
+            if(studentData.length == 0){alert('先导入名单');return;}
+            
+            // 记录开始抽奖日志
+            addOperationLog('其他操作', '开始随机抽奖', '无');
+            
+            let box = document.getElementById('lotteryBox');
+            let name = document.getElementById('lotteryName');
+            let cd=document.getElementById('lotteryCountdown');
+            box.style.display='flex';
+            let cnt=5;cd.innerText=cnt;
+            if(lotteryCountdownTimer)clearInterval(lotteryCountdownTimer);
+            if(lotteryNameTimer)clearInterval(lotteryNameTimer);
+            lotteryNameTimer=setInterval(()=>{
+                let x=studentData[Math.floor(Math.random()*studentData.length)];
+                name.innerText=x.id?x.id+'-'+x.name:x.name;
+            },100);
+            lotteryCountdownTimer=setInterval(()=>{
+                cnt--;cd.innerText=cnt;
+                if(cnt<=0){
+                    clearInterval(lotteryNameTimer);
+                    clearInterval(lotteryCountdownTimer);
+                    cd.innerText='中奖！';
+                    
+                    // 记录抽奖结果日志
+                    const winner = name.innerText;
+                    addOperationLog('其他操作', '随机抽奖完成', `中奖学生：${winner}`);
+                }
+            },1000);
+        }
+        
+        function closeLottery(){
+            if(lotteryCountdownTimer)clearInterval(lotteryCountdownTimer);
+            if(lotteryNameTimer)clearInterval(lotteryNameTimer);
+            document.getElementById('lotteryBox').style.display='none';
+            
+            // 记录关闭抽奖日志
+            addOperationLog('其他操作', '关闭随机抽奖', '无');
+        }
+
+        function saveNotice(){
+            let oldNotice = document.getElementById('noticeShow').innerText;
+            let newNotice = document.getElementById('noticeText').value;
+            
+            document.getElementById('noticeShow').innerText = newNotice || '暂无公告';
+            
+            // 保存到当前用户数据
+            if (currentUser) {
+                userList[currentUser].notice = newNotice;
+                save();
+                
+                // 记录公告修改日志
+                addOperationLog(
+                    '公告修改', 
+                    '班级公告修改', 
+                    `旧公告：${oldNotice} | 新公告：${newNotice || '空'}`
+                );
+            }
+        }
+        
+        function saveHomework(){
+            let oldHomework = document.getElementById('homeworkShow').innerText;
+            let newHomework = document.getElementById('homeworkText').value;
+            
+            document.getElementById('homeworkShow').innerText = newHomework || '暂无作业';
+            
+            // 保存到当前用户数据
+            if (currentUser) {
+                userList[currentUser].homework = newHomework;
+                save();
+                
+                // 记录作业修改日志
+                addOperationLog(
+                    '作业修改', 
+                    '作业布置修改', 
+                    `旧作业：${oldHomework} | 新作业：${newHomework || '空'}`
+                );
+            }
+        }
+
+        function showHonor(){
+            if(studentData.length==0){
+                document.getElementById('honorShow').innerText='请先导入学生名单';
+                return;
+            }
+            
+            let sorted=[...studentData].sort((a,b)=>{
+                let ka=getStudentKey(a);
+                let kb=getStudentKey(b);
+                return scoreData[kb]-scoreData[ka];
+            });
+            let top20=sorted.slice(0,20);
+            let html='<div style="text-align:center;font-size:24px;margin-bottom:20px;">🏆 积分排行榜（前20名）</div>';
+            let honorDetail = ''; // 荣誉墙详情（用于日志）
+            top20.forEach((s,i)=>{
+                let k=getStudentKey(s);
+                let d=s.id?s.id+'-'+s.name:s.name;
+                honorDetail += `${i+1}.${d}(${scoreData[k]||0}分) | `;
+                html+=`<div class="honor-item"><span class="honor-rank">${i+1}.</span><span class="honor-name">${d}</span><span class="honor-score">积分：${scoreData[k]||0}</span></div>`;
+            });
+            document.getElementById('honorShow').innerHTML=html;
+            
+            // 记录显示荣誉墙日志
+            addOperationLog(
+                '其他操作', 
+                '刷新班级荣誉墙', 
+                honorDetail.slice(0, -3) // 去掉最后一个 |
+            );
+        }
+
+        function exportScore(){
+            let csv='排名,学号,姓名,积分\n';
+            let sorted=[...studentData].sort((a,b)=>{
+                let ka=getStudentKey(a);
+                let kb=getStudentKey(b);
+                return scoreData[kb]-scoreData[ka];
+            });
+            sorted.forEach((s,i)=>{
+                let k=getStudentKey(s);
+                csv+=`${i+1},${s.id||''},${s.name},${scoreData[k]}\n`;
+            });
+            
+            // 记录导出积分表日志
+            addOperationLog('其他操作', '导出积分表', `导出${sorted.length}条积分数据`);
+            
+            download(csv,'班级积分表.csv');
+        }
+        
+        function exportSign(){
+            let csv='序号,学号,姓名,状态\n';
+            let l=document.querySelectorAll('#signBody tr');
+            l.forEach((r,i)=>{
+                csv+=`${i+1},${r.cells[1].innerText},${r.cells[2].innerText},${r.cells[3].innerText}\n`;
+            });
+            
+            // 记录导出签到表日志
+            addOperationLog('其他操作', '导出签到表', `导出${l.length}条签到数据`);
+            
+            download(csv,'签到记录表.csv');
+        }
+        
+        function exportRecord(){
+            let csv='时间,学号,姓名,类型,内容\n';
+            records.forEach(r=>{
+                csv+=`${r.time},${r.id||''},${r.name},${r.type},${r.text}\n`;
+            });
+            
+            // 记录导出行为记录日志
+            addOperationLog('其他操作', '导出行为记录', `导出${records.length}条行为记录`);
+            
+            download(csv,'学生行为记录.csv');
+        }
+        
+        function download(csv,name){
+            let b=new Blob([new Uint8Array([0xEF,0xBB,0xBF]),csv],{type:'text/csv'});
+            let a=document.createElement('a');
+            a.href=URL.createObjectURL(b);
+            a.download=name;
+            a.click();
+        }
+
+        // 页面加载时初始化
+        window.onload=function(){
+            userList = JSON.parse(localStorage.getItem('classManagerUsers')) || {};
+            historyAccounts = JSON.parse(localStorage.getItem('classManagerHistoryAccounts')) || [];
+            initHistoryAccounts();
+            updateTimerDate();
+            
+            // 为历史账号添加点击登录事件
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('account-name')) {
+                    loginFromHistory(e.target.innerText);
+                }
+            });
+        };
+    </script>
+</body>
+</html>
